@@ -7,6 +7,9 @@ author: Itamar
 load: POSTWORLD
 description: Massive multi-world box mining progression server core.
 commands:
+  menu:
+    aliases: [minetuff, mines]
+    description: Open the MineTuff game menu.
   mine:
     description: Travel to your assigned mining pod.
     usage: /mine [world]
