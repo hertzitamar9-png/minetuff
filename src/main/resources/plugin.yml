@@ -20,7 +20,9 @@ commands:
     aliases: [sell]
     description: Sell stored mined blocks.
   upgrade:
-    description: Upgrade your mining tool.
+    description: Upgrade your mining tool core.
+  tool:
+    description: Select pickaxe, hammer, drill or laser mining mode.
   prestige:
     description: Prestige for permanent multipliers.
   crate:
