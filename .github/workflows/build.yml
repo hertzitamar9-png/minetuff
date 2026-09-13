@@ -16,8 +16,11 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Compile and verify
+      - name: Compile, test and verify
         run: mvn -B -ntp verify
+      - name: Verify PowerShell launchers
+        shell: pwsh
+        run: ./scripts/verify-scripts.ps1
       - name: Upload plugin jar
         uses: actions/upload-artifact@v4
         with:
