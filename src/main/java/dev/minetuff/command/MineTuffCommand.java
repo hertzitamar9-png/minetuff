@@ -7,6 +7,8 @@ import dev.minetuff.mine.MineService;
 import dev.minetuff.model.CrateTier;
 import dev.minetuff.model.PlayerProfile;
 import dev.minetuff.progression.ProgressionService;
+import dev.minetuff.tools.ToolMode;
+import dev.minetuff.tools.ToolService;
 import dev.minetuff.world.WorldCatalog;
 import dev.minetuff.world.WorldDefinition;
 import dev.minetuff.world.WorldService;
@@ -33,9 +35,11 @@ public final class MineTuffCommand implements CommandExecutor, TabCompleter {
     private final WorldCatalog catalog;
     private final WorldService worlds;
     private final MineService mines;
+    private final ToolService tools;
 
     public MineTuffCommand(ProfileRepository profiles, EconomyService economy, ProgressionService progression,
-                           CrateService crates, WorldCatalog catalog, WorldService worlds, MineService mines) {
+                           CrateService crates, WorldCatalog catalog, WorldService worlds, MineService mines,
+                           ToolService tools) {
         this.profiles = profiles;
         this.economy = economy;
         this.progression = progression;
@@ -43,6 +47,7 @@ public final class MineTuffCommand implements CommandExecutor, TabCompleter {
         this.catalog = catalog;
         this.worlds = worlds;
         this.mines = mines;
+        this.tools = tools;
     }
 
     @Override
@@ -64,6 +69,7 @@ public final class MineTuffCommand implements CommandExecutor, TabCompleter {
             case "shop" -> shop(player, profile, args);
             case "daily" -> daily(player, profile);
             case "stats" -> stats(player, profile);
+            case "tool" -> tool(player, profile, args);
             default -> false;
         };
     }
@@ -197,6 +203,24 @@ public final class MineTuffCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean tool(Player player, PlayerProfile profile, String[] args) {
+        if (args.length == 0) {
+            ToolMode active = tools.active(player, profile);
+            player.sendMessage(Component.text("Active tool: " + active.displayName() + "."));
+            player.sendMessage(Component.text("Pickaxe L1 · Hammer L25 · Drill L50 · Laser L100"));
+            return true;
+        }
+        ToolMode mode;
+        try { mode = ToolMode.valueOf(args[0].toUpperCase(Locale.ROOT)); }
+        catch (IllegalArgumentException ex) {
+            player.sendMessage(Component.text("Use /tool pickaxe|hammer|drill|laser."));
+            return true;
+        }
+        ToolService.SelectResult result = tools.select(player, profile, mode);
+        player.sendMessage(Component.text(result.message()));
+        return true;
+    }
+
     private boolean daily(Player player, PlayerProfile profile) {
         long today = LocalDate.now(ZoneOffset.UTC).toEpochDay();
         if (profile.lastDailyEpochDay() >= today) {
@@ -218,7 +242,8 @@ public final class MineTuffCommand implements CommandExecutor, TabCompleter {
                 + " · World " + profile.worldId() + "/" + catalog.size()
                 + " · Tool " + profile.toolLevel() + "/" + progression.maxToolLevel()));
         player.sendMessage(Component.text("Blocks mined: " + String.format("%,d", profile.blocksMined())
-                + " · Backpack: " + profile.storedBlocks() + "/" + economy.backpackCapacity(profile)));
+                + " · Backpack: " + profile.storedBlocks() + "/" + economy.backpackCapacity(profile)
+                + " · Mode: " + tools.active(player, profile).displayName()));
         return true;
     }
 
@@ -230,6 +255,7 @@ public final class MineTuffCommand implements CommandExecutor, TabCompleter {
         List<String> options = new ArrayList<>();
         if (command.getName().equalsIgnoreCase("crate")) options.addAll(List.of("keys", "common", "rare", "epic"));
         else if (command.getName().equalsIgnoreCase("shop")) options.addAll(List.of("tool", "world", "common", "rare", "epic"));
+        else if (command.getName().equalsIgnoreCase("tool")) options.addAll(List.of("pickaxe", "hammer", "drill", "laser"));
         else if (command.getName().equalsIgnoreCase("mine")) {
             for (int i = 1; i <= catalog.size(); i++) options.add(Integer.toString(i));
         }
