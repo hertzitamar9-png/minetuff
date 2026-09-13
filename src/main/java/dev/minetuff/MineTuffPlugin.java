@@ -35,12 +35,12 @@ public final class MineTuffPlugin extends JavaPlugin {
         EconomyService economy = new EconomyService(getConfig());
         ProgressionService progression = new ProgressionService(getConfig());
         CrateService crates = new CrateService(getConfig());
-        ToolService tools = new ToolService();
+        ToolService tools = new ToolService(this);
         MineService mines = new MineService(this, getConfig());
         WorldService worlds = new WorldService(this, catalog, getConfig());
         MenuService menus = new MenuService(profiles, catalog, tools);
 
-        Bukkit.getPluginManager().registerEvents(new SessionListener(profiles), this);
+        Bukkit.getPluginManager().registerEvents(new SessionListener(profiles, tools), this);
         Bukkit.getPluginManager().registerEvents(new CapacityListener(worlds, getConfig()), this);
         Bukkit.getPluginManager().registerEvents(new MiningListener(this, profiles, economy, crates, mines, worlds, tools), this);
         Bukkit.getPluginManager().registerEvents(new PortalListener(profiles, progression, catalog, worlds, mines), this);
