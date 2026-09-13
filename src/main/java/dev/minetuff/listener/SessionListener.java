@@ -5,6 +5,7 @@ import dev.minetuff.model.PlayerProfile;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -13,6 +14,11 @@ public final class SessionListener implements Listener {
 
     public SessionListener(ProfileRepository profiles) {
         this.profiles = profiles;
+    }
+
+    @EventHandler
+    public void onPreLogin(AsyncPlayerPreLoginEvent event) {
+        profiles.preload(event.getUniqueId());
     }
 
     @EventHandler
