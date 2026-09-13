@@ -1,0 +1,27 @@
+server:
+  max-players-per-world: 1000
+  pods-per-world: 64
+  pod-spacing: 256
+  mine-width: 64
+  mine-depth: 32
+  mine-length: 64
+  reset-percent: 0.65
+  autosave-seconds: 60
+progression:
+  base-tool-upgrade-cost: 2500.0
+  tool-upgrade-growth: 1.65
+  max-tool-level: 250
+  base-prestige-cost: 5000000.0
+  prestige-growth: 2.2
+  max-prestige: 100
+  prestige-money-bonus-per-level: 0.12
+crates:
+  common-key-chance: 0.004
+  rare-key-chance: 0.0008
+  epic-key-chance: 0.00015
+economy:
+  backpack-base-capacity: 5000
+  backpack-per-tool-level: 750
+worlds:
+  eager-create-first: 3
+  create-on-demand: true
