@@ -1,5 +1,6 @@
 package dev.minetuff.mine;
 
+import dev.minetuff.world.WorldDecoration;
 import dev.minetuff.world.WorldDefinition;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -167,6 +168,7 @@ public final class MineService {
                 }
             }
         }
+        WorldDecoration.decorateOwnedChunk(definition, world, c.x, c.z, platformY, width, length, chunkX, chunkZ);
     }
 
     private void buildPortalPadIfOwned(World world, int x, int y, int z, Material material, int chunkX, int chunkZ) {
