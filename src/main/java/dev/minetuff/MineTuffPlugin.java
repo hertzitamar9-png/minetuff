@@ -1,6 +1,7 @@
 package dev.minetuff;
 
 import dev.minetuff.command.AdminCommand;
+import dev.minetuff.command.MenuCommand;
 import dev.minetuff.command.MineTuffCommand;
 import dev.minetuff.crates.CrateService;
 import dev.minetuff.data.ProfileRepository;
@@ -10,6 +11,7 @@ import dev.minetuff.listener.CapacityListener;
 import dev.minetuff.listener.MiningListener;
 import dev.minetuff.listener.PortalListener;
 import dev.minetuff.listener.SessionListener;
+import dev.minetuff.menu.MenuService;
 import dev.minetuff.mine.MineService;
 import dev.minetuff.progression.ProgressionService;
 import dev.minetuff.tools.ToolService;
@@ -36,11 +38,13 @@ public final class MineTuffPlugin extends JavaPlugin {
         ToolService tools = new ToolService();
         MineService mines = new MineService(this, getConfig());
         WorldService worlds = new WorldService(this, catalog, getConfig());
+        MenuService menus = new MenuService(profiles, catalog, tools);
 
         Bukkit.getPluginManager().registerEvents(new SessionListener(profiles), this);
         Bukkit.getPluginManager().registerEvents(new CapacityListener(worlds, getConfig()), this);
         Bukkit.getPluginManager().registerEvents(new MiningListener(this, profiles, economy, crates, mines, worlds, tools), this);
         Bukkit.getPluginManager().registerEvents(new PortalListener(profiles, progression, catalog, worlds, mines), this);
+        Bukkit.getPluginManager().registerEvents(menus, this);
 
         MineTuffCommand commandHandler = new MineTuffCommand(profiles, economy, progression, crates, catalog, worlds, mines, tools);
         for (String name : List.of("mine", "worlds", "balance", "sellall", "upgrade", "tool", "prestige", "crate", "shop", "daily", "stats")) {
@@ -49,6 +53,10 @@ public final class MineTuffPlugin extends JavaPlugin {
             command.setExecutor(commandHandler);
             command.setTabCompleter(commandHandler);
         }
+        PluginCommand menu = getCommand("menu");
+        if (menu == null) throw new IllegalStateException("Missing command in plugin.yml: menu");
+        menu.setExecutor(new MenuCommand(menus));
+
         PluginCommand admin = getCommand("mtadmin");
         if (admin == null) throw new IllegalStateException("Missing command in plugin.yml: mtadmin");
         admin.setExecutor(new AdminCommand(profiles, catalog, worlds, mines));
