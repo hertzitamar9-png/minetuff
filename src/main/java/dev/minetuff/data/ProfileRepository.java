@@ -17,6 +17,8 @@ public final class ProfileRepository {
     private final Plugin plugin;
     private final File playersDirectory;
     private final Map<UUID, PlayerProfile> cache = new ConcurrentHashMap<>();
+    private final Map<UUID, PlayerProfile.Snapshot> pendingSaves = new ConcurrentHashMap<>();
+    private final Map<UUID, Object> saveLocks = new ConcurrentHashMap<>();
 
     public ProfileRepository(Plugin plugin) {
         this.plugin = plugin;
@@ -30,14 +32,19 @@ public final class ProfileRepository {
         return cache.computeIfAbsent(uuid, this::load);
     }
 
+    public void preload(UUID uuid) {
+        get(uuid);
+    }
+
     public void unload(UUID uuid) {
         PlayerProfile profile = cache.remove(uuid);
         if (profile != null) saveAsync(profile);
     }
 
     public void saveAsync(PlayerProfile profile) {
-        PlayerProfile.Snapshot snapshot = profile.snapshot();
-        Bukkit.getAsyncScheduler().runNow(plugin, task -> saveSnapshot(snapshot));
+        UUID uuid = profile.uuid();
+        pendingSaves.put(uuid, profile.snapshot());
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> flushLatest(uuid));
     }
 
     public void saveAllAsync() {
@@ -45,7 +52,17 @@ public final class ProfileRepository {
     }
 
     public void saveAllBlocking() {
-        for (PlayerProfile profile : cache.values()) saveSnapshot(profile.snapshot());
+        for (PlayerProfile profile : cache.values()) pendingSaves.put(profile.uuid(), profile.snapshot());
+        for (UUID uuid : pendingSaves.keySet()) flushLatest(uuid);
+    }
+
+    private void flushLatest(UUID uuid) {
+        Object lock = saveLocks.computeIfAbsent(uuid, ignored -> new Object());
+        synchronized (lock) {
+            PlayerProfile.Snapshot snapshot = pendingSaves.remove(uuid);
+            if (snapshot != null) saveSnapshot(snapshot);
+            if (!pendingSaves.containsKey(uuid)) saveLocks.remove(uuid, lock);
+        }
     }
 
     private PlayerProfile load(UUID uuid) {
