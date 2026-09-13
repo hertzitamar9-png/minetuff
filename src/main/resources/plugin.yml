@@ -1,0 +1,35 @@
+name: MineTuff
+version: 0.1.0
+main: dev.minetuff.MineTuffPlugin
+api-version: '1.21'
+folia-supported: true
+author: Itamar
+load: POSTWORLD
+description: Massive multi-world box mining progression server core.
+commands:
+  mine:
+    description: Travel to your assigned mining pod.
+    usage: /mine [world]
+  worlds:
+    description: Browse the 100 mining worlds.
+    usage: /worlds [page]
+  balance:
+    aliases: [bal, money]
+    description: Show your balance.
+  sellall:
+    aliases: [sell]
+    description: Sell stored mined blocks.
+  upgrade:
+    description: Upgrade your mining tool.
+  prestige:
+    description: Prestige for permanent multipliers.
+  crate:
+    aliases: [crates]
+    description: Open or inspect mining crates.
+  stats:
+    description: Show mining progression statistics.
+permissions:
+  minetuff.admin:
+    default: op
+  minetuff.play:
+    default: true
