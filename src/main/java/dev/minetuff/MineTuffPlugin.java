@@ -1,5 +1,6 @@
 package dev.minetuff;
 
+import dev.minetuff.command.AdminCommand;
 import dev.minetuff.command.MineTuffCommand;
 import dev.minetuff.crates.CrateService;
 import dev.minetuff.data.ProfileRepository;
@@ -48,6 +49,9 @@ public final class MineTuffPlugin extends JavaPlugin {
             command.setExecutor(commandHandler);
             command.setTabCompleter(commandHandler);
         }
+        PluginCommand admin = getCommand("mtadmin");
+        if (admin == null) throw new IllegalStateException("Missing command in plugin.yml: mtadmin");
+        admin.setExecutor(new AdminCommand(profiles, catalog, worlds, mines));
 
         long autosaveTicks = Math.max(20L, getConfig().getLong("server.autosave-seconds", 60L) * 20L);
         Bukkit.getGlobalRegionScheduler().runAtFixedRate(this, task -> profiles.saveAllAsync(), autosaveTicks, autosaveTicks);
