@@ -26,6 +26,10 @@ commands:
   crate:
     aliases: [crates]
     description: Open or inspect mining crates.
+  shop:
+    description: Buy tool upgrades, world unlocks and crate keys.
+  daily:
+    description: Claim the daily mining reward.
   stats:
     description: Show mining progression statistics.
 permissions:
