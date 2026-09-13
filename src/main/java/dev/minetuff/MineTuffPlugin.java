@@ -10,6 +10,7 @@ import dev.minetuff.listener.PortalListener;
 import dev.minetuff.listener.SessionListener;
 import dev.minetuff.mine.MineService;
 import dev.minetuff.progression.ProgressionService;
+import dev.minetuff.tools.ToolService;
 import dev.minetuff.world.WorldCatalog;
 import dev.minetuff.world.WorldService;
 import org.bukkit.Bukkit;
@@ -30,16 +31,17 @@ public final class MineTuffPlugin extends JavaPlugin {
         EconomyService economy = new EconomyService(getConfig());
         ProgressionService progression = new ProgressionService(getConfig());
         CrateService crates = new CrateService(getConfig());
+        ToolService tools = new ToolService();
         MineService mines = new MineService(this, getConfig());
         WorldService worlds = new WorldService(this, catalog, getConfig());
 
         Bukkit.getPluginManager().registerEvents(new SessionListener(profiles), this);
         Bukkit.getPluginManager().registerEvents(new CapacityListener(worlds, getConfig()), this);
-        Bukkit.getPluginManager().registerEvents(new MiningListener(profiles, economy, crates, mines, worlds), this);
+        Bukkit.getPluginManager().registerEvents(new MiningListener(this, profiles, economy, crates, mines, worlds, tools), this);
         Bukkit.getPluginManager().registerEvents(new PortalListener(profiles, progression, catalog, worlds, mines), this);
 
-        MineTuffCommand commandHandler = new MineTuffCommand(profiles, economy, progression, crates, catalog, worlds, mines);
-        for (String name : List.of("mine", "worlds", "balance", "sellall", "upgrade", "prestige", "crate", "shop", "daily", "stats")) {
+        MineTuffCommand commandHandler = new MineTuffCommand(profiles, economy, progression, crates, catalog, worlds, mines, tools);
+        for (String name : List.of("mine", "worlds", "balance", "sellall", "upgrade", "tool", "prestige", "crate", "shop", "daily", "stats")) {
             PluginCommand command = getCommand(name);
             if (command == null) throw new IllegalStateException("Missing command in plugin.yml: " + name);
             command.setExecutor(commandHandler);
@@ -50,7 +52,7 @@ public final class MineTuffPlugin extends JavaPlugin {
         Bukkit.getGlobalRegionScheduler().runAtFixedRate(this, task -> profiles.saveAllAsync(), autosaveTicks, autosaveTicks);
         worlds.prewarm();
 
-        getLogger().info("MineTuff enabled with " + catalog.size() + " mining worlds, 64 Folia-distributed pods per world, and a 1000-player hard cap per world.");
+        getLogger().info("MineTuff enabled with " + catalog.size() + " mining worlds, 64 Folia-distributed pods per world, four mining tool modes, and a 1000-player hard cap per world.");
     }
 
     @Override
