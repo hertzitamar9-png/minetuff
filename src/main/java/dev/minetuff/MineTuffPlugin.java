@@ -4,6 +4,7 @@ import dev.minetuff.command.MineTuffCommand;
 import dev.minetuff.crates.CrateService;
 import dev.minetuff.data.ProfileRepository;
 import dev.minetuff.economy.EconomyService;
+import dev.minetuff.listener.CapacityListener;
 import dev.minetuff.listener.MiningListener;
 import dev.minetuff.listener.PortalListener;
 import dev.minetuff.listener.SessionListener;
@@ -33,6 +34,7 @@ public final class MineTuffPlugin extends JavaPlugin {
         WorldService worlds = new WorldService(this, catalog, getConfig());
 
         Bukkit.getPluginManager().registerEvents(new SessionListener(profiles), this);
+        Bukkit.getPluginManager().registerEvents(new CapacityListener(worlds, getConfig()), this);
         Bukkit.getPluginManager().registerEvents(new MiningListener(profiles, economy, crates, mines, worlds), this);
         Bukkit.getPluginManager().registerEvents(new PortalListener(profiles, progression, catalog, worlds, mines), this);
 
@@ -48,7 +50,7 @@ public final class MineTuffPlugin extends JavaPlugin {
         Bukkit.getGlobalRegionScheduler().runAtFixedRate(this, task -> profiles.saveAllAsync(), autosaveTicks, autosaveTicks);
         worlds.prewarm();
 
-        getLogger().info("MineTuff enabled with " + catalog.size() + " mining worlds and 64 Folia-distributed pods per world.");
+        getLogger().info("MineTuff enabled with " + catalog.size() + " mining worlds, 64 Folia-distributed pods per world, and a 1000-player hard cap per world.");
     }
 
     @Override
