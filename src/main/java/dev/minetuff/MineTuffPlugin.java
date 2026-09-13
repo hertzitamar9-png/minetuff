@@ -11,6 +11,7 @@ import dev.minetuff.listener.CapacityListener;
 import dev.minetuff.listener.MiningListener;
 import dev.minetuff.listener.PortalListener;
 import dev.minetuff.listener.SessionListener;
+import dev.minetuff.listener.ToolProtectionListener;
 import dev.minetuff.menu.MenuService;
 import dev.minetuff.mine.MineService;
 import dev.minetuff.progression.ProgressionService;
@@ -44,6 +45,7 @@ public final class MineTuffPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CapacityListener(worlds, getConfig()), this);
         Bukkit.getPluginManager().registerEvents(new MiningListener(this, profiles, economy, crates, mines, worlds, tools), this);
         Bukkit.getPluginManager().registerEvents(new PortalListener(profiles, progression, catalog, worlds, mines), this);
+        Bukkit.getPluginManager().registerEvents(new ToolProtectionListener(tools), this);
         Bukkit.getPluginManager().registerEvents(menus, this);
 
         MineTuffCommand commandHandler = new MineTuffCommand(profiles, economy, progression, crates, catalog, worlds, mines, tools);
