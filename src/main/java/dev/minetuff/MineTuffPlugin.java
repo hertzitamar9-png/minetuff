@@ -4,6 +4,7 @@ import dev.minetuff.command.MineTuffCommand;
 import dev.minetuff.crates.CrateService;
 import dev.minetuff.data.ProfileRepository;
 import dev.minetuff.economy.EconomyService;
+import dev.minetuff.hud.HudService;
 import dev.minetuff.listener.CapacityListener;
 import dev.minetuff.listener.MiningListener;
 import dev.minetuff.listener.PortalListener;
@@ -50,6 +51,7 @@ public final class MineTuffPlugin extends JavaPlugin {
 
         long autosaveTicks = Math.max(20L, getConfig().getLong("server.autosave-seconds", 60L) * 20L);
         Bukkit.getGlobalRegionScheduler().runAtFixedRate(this, task -> profiles.saveAllAsync(), autosaveTicks, autosaveTicks);
+        new HudService(this, profiles, economy, tools, worlds).start();
         worlds.prewarm();
 
         getLogger().info("MineTuff enabled with " + catalog.size() + " mining worlds, 64 Folia-distributed pods per world, four mining tool modes, and a 1000-player hard cap per world.");
