@@ -34,6 +34,9 @@ commands:
     description: Claim the daily mining reward.
   stats:
     description: Show mining progression statistics.
+  mtadmin:
+    description: MineTuff administrative operations.
+    permission: minetuff.admin
 permissions:
   minetuff.admin:
     default: op
